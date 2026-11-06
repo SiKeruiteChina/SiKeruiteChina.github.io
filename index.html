@@ -63,13 +63,6 @@
     background:radial-gradient(ellipse 90% 70% at 50% 20%,transparent 30%,rgba(5,6,10,.75) 78%,var(--bg) 100%);
   }
 
-  .spot{
-    position:fixed;top:0;left:0;width:620px;height:620px;border-radius:50%;z-index:1;
-    background:radial-gradient(circle,rgba(94,231,255,.10),rgba(179,156,255,.06) 40%,transparent 68%);
-    transform:translate(-50%,-50%);pointer-events:none;
-    transition:opacity .4s ease;opacity:0;
-  }
-
   /* ---------- 布局 ---------- */
   .wrap{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:0 28px;}
 
@@ -202,13 +195,7 @@
     transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s ease,background .35s ease;
     overflow:hidden;
   }
-  .card::after{
-    content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;
-    background:radial-gradient(320px circle at var(--mx,50%) var(--my,0%),rgba(94,231,255,.13),transparent 62%);
-    transition:opacity .35s ease;pointer-events:none;
-  }
   .card:hover{transform:translateY(-5px);border-color:rgba(255,255,255,.2);}
-  .card:hover::after{opacity:1;}
   .card .ico{
     width:34px;height:34px;border-radius:10px;display:grid;place-items:center;margin-bottom:18px;
     background:rgba(255,255,255,.06);border:1px solid var(--line);
@@ -230,6 +217,11 @@
     transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s ease;
   }
   .rank-item:hover{transform:translateX(4px);border-color:rgba(255,255,255,.2);}
+
+  a.rank-item{text-decoration:none;color:inherit;}
+  a.rank-item:focus-visible{outline:2px solid rgba(94,231,255,.6);outline-offset:3px;}
+  a.rank-item:hover .rank-tag{color:var(--ink);border-color:rgba(255,255,255,.34);}
+  a.rank-item.top:hover .rank-tag{color:#ffcb6b;border-color:rgba(255,203,107,.75);background:rgba(255,203,107,.16);}
 
   .rank-item.top{
     border-color:rgba(255,203,107,.38);
@@ -372,7 +364,6 @@
   <div class="grid"></div>
   <div class="vignette"></div>
 </div>
-<div class="spot" id="spot" aria-hidden="true"></div>
 
 <div class="wrap">
 
@@ -460,7 +451,8 @@
     </div>
     <div class="rank-wrap">
       <div class="rank-list">
-        <div class="rank-item top">
+        <a class="rank-item top" href="https://www.douyin.com/user/MS4wLjABAAAAgCTPIJIoYlNoMTnfhy4QWZLsdmOpzDw3mivVQCXX6_sFrhg1glG1Uh9JjHw58aXZ?from_tab_name=main&amp;is_search=1&amp;list_name=follow&amp;nt=0"
+           target="_blank" rel="noopener noreferrer" title="打开 Sudjres 的抖音主页">
           <span class="rank-num">01</span>
           <div class="avatar">
             <span>S</span>
@@ -472,8 +464,8 @@
             <div class="name">Sudjres</div>
             <div class="sub">朋友榜 · 第一名</div>
           </div>
-          <span class="rank-tag">TOP 1</span>
-        </div>
+          <span class="rank-tag">TOP 1 &nearr;</span>
+        </a>
 
         <div class="rank-item">
           <span class="rank-num">02</span>
@@ -485,15 +477,21 @@
           <span class="rank-tag">PENDING</span>
         </div>
 
-        <div class="rank-item">
+        <a class="rank-item" href="https://www.douyin.com/user/MS4wLjABAAAAqkSWYZwilA63R3BSGlMIWs9yHWS1xBG3-v4TR1hb3O9NRLJbaVkoC3NqnMc28Jce?from_tab_name=main&amp;is_search=0&amp;list_name=fans&amp;nt=0"
+           target="_blank" rel="noopener noreferrer" title="打开 宁 的抖音主页">
           <span class="rank-num">03</span>
-          <div class="avatar-empty">+</div>
-          <div class="rank-info">
-            <div class="name">虚位以待</div>
-            <div class="sub">下一个是谁？</div>
+          <div class="avatar">
+            <span>宁</span>
+            <img src="https://p3-pc.douyinpic.com/img/aweme-avatar/tos-cn-i-0813c000-ce_osAJTlVKAC7WILgBLAAG5IQG4gUOuAfFCueeUv~c5_300x300.jpeg?from=2956013662"
+                 alt="宁 的头像" referrerpolicy="no-referrer" loading="lazy"
+                 onerror="this.style.display='none';" />
           </div>
-          <span class="rank-tag">PENDING</span>
-        </div>
+          <div class="rank-info">
+            <div class="name">宁</div>
+            <div class="sub">朋友榜 · 第三名</div>
+          </div>
+          <span class="rank-tag">抖音 &nearr;</span>
+        </a>
       </div>
 
       <aside class="note-card">
@@ -546,24 +544,6 @@
 <script>
   // 年份
   document.getElementById('year').textContent = new Date().getFullYear();
-
-  // 跟随光斑
-  var spot = document.getElementById('spot');
-  var shown = false;
-  window.addEventListener('pointermove', function (e) {
-    spot.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px) translate(-50%,-50%)';
-    if (!shown) { spot.style.opacity = '1'; shown = true; }
-  });
-  window.addEventListener('pointerleave', function () { spot.style.opacity = '0'; shown = false; });
-
-  // 卡片内跟随高光
-  document.querySelectorAll('.card').forEach(function (card) {
-    card.addEventListener('pointermove', function (e) {
-      var r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-    });
-  });
 </script>
 </body>
 </html>
